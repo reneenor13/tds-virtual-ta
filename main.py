@@ -1,11 +1,24 @@
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+import uvicorn
 
-# Mount the static folder
+app = FastAPI()
+
+@app.post("/api/")
+async def answer_question(request: Request):
+    data = await request.json()
+    question = data.get("question", "")
+    return {"answer": f"You asked: {question}"}
+
+# Mount static files
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
+# Optional: redirect root path to /index.html
 @app.get("/")
 def root():
     return RedirectResponse("/index.html")
 
-
+# For local testing
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
