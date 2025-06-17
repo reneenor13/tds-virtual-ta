@@ -12,3 +12,6 @@ class QuestionRequest(BaseModel):
 async def answer_question(req: QuestionRequest):
     response = generate_answer(req.question, req.image)
     return response
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
