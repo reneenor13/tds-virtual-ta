@@ -1,16 +1,11 @@
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
-from model import generate_answer
-
-app = FastAPI()
-
-class QuestionRequest(BaseModel):
-    question: str
-    image: str | None = None
-
-@app.post("/api/")
-async def answer_question(req: QuestionRequest):
-    response = generate_answer(req.question, req.image)
-    return response
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+
+# Mount the static folder
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
+@app.get("/")
+def root():
+    return RedirectResponse("/index.html")
+
 
