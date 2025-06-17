@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TDS Virtual TA</title>
+</head>
+<body>
+  <h2>Ask your question</h2>
+  <form id="qa-form">
+    <label for="question">Question:</label><br>
+    <input type="text" id="question" name="question" size="100"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <h3>Response:</h3>
+  <pre id="response"></pre>
+
+  <script>
+    const form = document.getElementById("qa-form");
+    const responseBox = document.getElementById("response");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const question = document.getElementById("question").value;
+
+      const res = await fetch("/api/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: question })
+      });
+
+      const data = await res.json();
+      responseBox.innerText = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>
