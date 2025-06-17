@@ -1,18 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TDS Virtual TA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    header {
+      background-color: #7d4c1f;
+      width: 100%;
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    header img {
+      height: 60px;
+      width: auto;
+      border-radius: 8px;
+    }
+    header h1 {
+      color: white;
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: 700;
+    }
+    main {
+      background: white;
+      margin: 40px auto;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+    form label {
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+    form input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      outline-color: #7d4c1f;
+      transition: border-color 0.3s;
+    }
+    form input[type="text"]:focus {
+      border-color: #7d4c1f;
+    }
+    form button {
+      margin-top: 20px;
+      background-color: #7d4c1f;
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    form button:hover {
+      background-color: #633b14;
+    }
+    h2 {
+      margin-top: 40px;
+      font-weight: 700;
+      border-bottom: 2px solid #7d4c1f;
+      padding-bottom: 8px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 20px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem;
+      color: #222;
+    }
+    @media (max-width: 480px) {
+      main {
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 1.3rem;
+      }
+      form button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Ask a TDS Question</h1>
-  <form id="ask-form">
-    <label for="question">Question:</label><br>
-    <input type="text" id="question" name="question" required><br><br>
-    <button type="submit">Ask</button>
-  </form>
+  <header>
+    <img src="47134575-de8d-4756-910f-1dbd515f76e7.png" alt="IIT Madras Logo" />
+    <h1>TDS Virtual TA</h1>
+  </header>
 
-  <h2>Answer:</h2>
-  <pre id="response"></pre>
+  <main>
+    <form id="ask-form">
+      <label for="question">Ask your TDS question:</label>
+      <input type="text" id="question" name="question" placeholder="Type your question here..." required />
+      <button type="submit">Ask</button>
+    </form>
+
+    <h2>Answer:</h2>
+    <pre id="response"></pre>
+  </main>
 
   <script>
     const form = document.getElementById("ask-form");
@@ -20,18 +132,26 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      responseBox.textContent = "Loading...";
       const question = document.getElementById("question").value;
 
-      const res = await fetch("/api/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
-      });
+      try {
+        const res = await fetch("/api/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
 
-      const data = await res.json();
-      responseBox.textContent = JSON.stringify(data, null, 2);
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        responseBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        responseBox.textContent = err.message;
+      }
     });
   </script>
 </body>
 </html>
-
